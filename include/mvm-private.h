@@ -12,4 +12,6 @@
 
 typedef unsigned char byte;
 
+char* mvm_bool_to_str(byte b);
+
 #endif

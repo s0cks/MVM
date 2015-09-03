@@ -16,6 +16,7 @@ mvm_obj_t* mvm_alloc_new_integer(mvm_allocator_t* alloc, int value);
 mvm_obj_t* mvm_alloc_new_double(mvm_allocator_t* alloc, double value);
 mvm_obj_t* mvm_alloc_new_byte(mvm_allocator_t* alloc, byte value);
 mvm_obj_t* mvm_alloc_new_string(mvm_allocator_t* alloc, byte* value);
+mvm_obj_t* mvm_alloc_new_bool(mvm_allocator_t* alloc, byte value);
 void mvm_alloc_free(mvm_allocator_t* alloc);
 
 #endif

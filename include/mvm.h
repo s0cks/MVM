@@ -3,7 +3,10 @@
 
 #include "mvm-private.h"
 #include "types/types.h"
+#include "types/mclass.h"
 #include "gc/allocator.h"
+#include "gc/collector.h"
+#include "opcodes.h"
 
 #ifndef MVM_SS
 #define MVM_SS 1024
@@ -23,10 +26,12 @@ mvm_obj_t* mvm_push_string(mvm_t* mvm, byte* data);
 mvm_obj_t* mvm_push_double(mvm_t* mvm, double data);
 mvm_obj_t* mvm_push_integer(mvm_t* mvm, int data);
 mvm_obj_t* mvm_push_byte(mvm_t* mvm, byte data);
+mvm_obj_t* mvm_push_bool(mvm_t* mvm, byte data);
 
 mvm_obj_t* mvm_pop(mvm_t* mvm);
 
 size_t mvm_gc(mvm_t* mvm);
 void mvm_free(mvm_t* mvm);
+void mvm_run(mvm_t* mvm);
 
 #endif

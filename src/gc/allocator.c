@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <types/types.h>
 #include <gc/allocator.h>
-#include "gc/allocator.h"
 #include "gc/collector.h"
 
 mvm_allocator_t*
@@ -67,6 +66,26 @@ mvm_alloc_new_byte(mvm_allocator_t* alloc, byte value){
 
     b->value = value;
     b->obj.type = MVM_BYTE;
+    b->obj.marked = 0;
+    b->obj.next = alloc->head;
+    alloc->head = &b->obj;
+    alloc->num_objects++;
+    return &b->obj;
+}
+
+mvm_obj_t*
+mvm_alloc_new_bool(mvm_allocator_t* alloc, byte value){
+    if(alloc->num_objects == alloc->max_objects){
+        mvm_gc_collect(alloc);
+    }
+
+    mvm_bool_t* b;
+    if((b = malloc(sizeof(mvm_bool_t))) == NULL){
+        return NULL;
+    }
+
+    b->value = value;
+    b->obj.type = MVM_BOOL;
     b->obj.marked = 0;
     b->obj.next = alloc->head;
     alloc->head = &b->obj;

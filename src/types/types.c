@@ -32,6 +32,16 @@ mvm_byte_value(mvm_obj_t* obj){
     }
 }
 
+byte
+mvm_bool_value(mvm_obj_t* obj){
+    if(mvm_is_bool(obj)){
+        return mvm_to_bool(obj)->value;
+    } else{
+        printf("[MVM] Not a bool\n");
+        exit(1);
+    }
+}
+
 mstring_t*
 mvm_string_value(mvm_obj_t* obj){
     if(mvm_is_string(obj)){
@@ -57,6 +67,9 @@ mvm_type_free(mvm_obj_t* obj){
     } else if(mvm_is_integer(obj)){
         mvm_integer_t* i = mvm_to_integer(obj);
         free(i);
+    } else if(mvm_is_bool(obj)){
+        mvm_bool_t* b = mvm_to_bool(obj);
+        free(b);
     } else{
         printf("[MVM] Unknown Type\n");
         exit(1);

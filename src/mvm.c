@@ -1,5 +1,16 @@
 #include <mvm.h>
-#include <gc/collector.h>
+
+static const char* MVM_TRUES = "true";
+static const char* MVM_FALSES = "false";
+
+char*
+mvm_bool_to_str(byte b){
+    if(b){
+        return (char*) MVM_TRUES;
+    } else{
+        return (char*) MVM_FALSES;
+    }
+}
 
 mvm_t*
 mvm_create(){
@@ -78,10 +89,25 @@ mvm_push_byte(mvm_t* mvm, byte data){
 }
 
 mvm_obj_t*
+mvm_push_bool(mvm_t* mvm, byte data){
+    mvm_obj_t* b;
+    if((b = mvm_alloc_new_bool(mvm->alloc, data)) == NULL){
+        return NULL;
+    }
+
+    if(mvm->stack_size > MVM_SS){
+        printf("[MVM] StackOverflow\n");
+        exit(1);
+    }
+
+    mvm->stack[mvm->stack_size++] = b;
+    return b;
+}
+
+mvm_obj_t*
 mvm_pop(mvm_t* mvm){
     if(mvm->stack_size-- < 0){
-        printf("[MVM] StackUnderflow\n");
-        exit(1);
+        return NULL;
     }
 
     return mvm->stack[mvm->stack_size];
@@ -104,4 +130,9 @@ mvm_free(mvm_t* mvm){
     mvm_gc_sweep(mvm->alloc);
     mvm_alloc_free(mvm->alloc);
     free(mvm);
+}
+
+void
+mvm_run(mvm_t* mvm){
+
 }
