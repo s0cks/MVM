@@ -12,14 +12,14 @@ mvm_hash(mstring_t* str){
 }
 
 mvm_class_field_t*
-mvm_new_field(mstring_t* str, mvm_obj_t* value){
+mvm_new_field(mstring_t* str, mvm_class_t* tclass){
     mvm_class_field_t* field;
     if((field = malloc(sizeof(mvm_class_field_t))) == NULL){
         return NULL;
     }
 
     field->name = str;
-    field->value = value;
+    field->tclass = tclass;
     field->next = NULL;
     return field;
 }
@@ -46,7 +46,7 @@ mvm_define_class(mstring_t* name, mvm_class_t* super){
 }
 
 mvm_class_field_t*
-mvm_class_define_field(mvm_class_t* klass, mstring_t* name, mvm_obj_t* value){
+mvm_class_define_field(mvm_class_t* klass, mstring_t* name, mvm_class_t* tclass){
     unsigned long int bin = mvm_hash(name);
     mvm_class_field_t* next = klass->iv[bin];
     mvm_class_field_t* last = NULL;
@@ -57,12 +57,10 @@ mvm_class_define_field(mvm_class_t* klass, mstring_t* name, mvm_obj_t* value){
     }
 
     if(next != NULL && next->name != NULL && mstring_equals(name, next->name) == 0){
-        mvm_type_free(next->value);
-        next->value = value;
-
+        next->tclass = tclass;
         return next;
     } else{
-        mvm_class_field_t* field = mvm_new_field(name, value);
+        mvm_class_field_t* field = mvm_new_field(name, tclass);
         if(next == klass->iv[bin]){
             field->next = next;
             klass->iv[bin] = field;
@@ -74,26 +72,6 @@ mvm_class_define_field(mvm_class_t* klass, mstring_t* name, mvm_obj_t* value){
         }
 
         return field;
-    }
-}
-
-mvm_obj_t*
-mvm_class_get_field(mvm_class_t* klass, mstring_t* name){
-    unsigned long int bin = mvm_hash(name);
-
-    mvm_class_field_t* entry = klass->iv[bin];
-    while(entry != NULL && entry->next != NULL && mstring_equals(name, entry->name) > 0){
-        entry = entry->next;
-    }
-
-    if(entry == NULL || entry->name == NULL || mstring_equals(name, entry->name) != 1){
-        if(klass->super != NULL){
-            return mvm_class_get_field(klass->super, name);
-        } else{
-            return NULL;
-        }
-    } else{
-        return entry->value;
     }
 }
 
@@ -115,27 +93,4 @@ void
 mvm_class_spec(mvm_class_t* klass){
     printf("Class: %s\n", mstring_cstr(klass->name));
     printf("SuperClass: %s\n", klass->super == NULL ? "<root>" : (char*) mstring_cstr(klass->super->name));
-    printf("----------------------------\n");
-
-    for(size_t i = 0; i < MVM_CLASS_SIZE; i++){
-        if(klass->iv[i] != NULL){
-            mvm_class_field_t* field = klass->iv[i];
-            while(field != NULL){
-                printf("%s: ", mstring_cstr(field->name));
-                if(mvm_is_bool(field->value)){
-                    printf("%s\n", mvm_bool_to_str(mvm_bool_value(field->value)));
-                } else if(mvm_is_double(field->value)){
-                    printf("%lf\n", mvm_double_value(field->value));
-                } else if(mvm_is_integer(field->value)){
-                    printf("%d\n", mvm_integer_value(field->value));
-                } else if(mvm_is_string(field->value)){
-                    printf("%s\n", mstring_cstr(mvm_string_value(field->value)));
-                } else{
-                    printf("<Unknown Type> %d\n", field->value->type);
-                }
-
-                field = field->next;
-            }
-        }
-    }
 }

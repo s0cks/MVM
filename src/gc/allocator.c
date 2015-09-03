@@ -113,6 +113,36 @@ mvm_alloc_new_string(mvm_allocator_t* alloc, byte* value){
     return &str->obj;
 }
 
+mvm_obj_t*
+mvm_alloc_new_array(mvm_allocator_t* alloc, size_t len){
+    if(alloc->num_objects == alloc->max_objects){
+        mvm_gc_collect(alloc);
+    }
+
+    mvm_array_t* array;
+    if((array = malloc(sizeof(mvm_array_t))) == NULL){
+        return NULL;
+    }
+
+    if((array->value = malloc(sizeof(mvm_obj_t*) * len)) == NULL){
+        free(array);
+        return NULL;
+    }
+
+    for(size_t i = 0; i < len; i++){
+        array->value[i] = NULL;
+    }
+
+    array->len = len;
+    array->size = 0;
+    array->obj.type = MVM_ARRAY;
+    array->obj.marked = 0;
+    array->obj.next = alloc->head;
+    alloc->head = &array->obj;
+    alloc->num_objects++;
+    return &array->obj;
+}
+
 void
 mvm_alloc_free(mvm_allocator_t* alloc){
     mvm_gc_collect(alloc);

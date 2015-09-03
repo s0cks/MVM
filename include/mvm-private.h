@@ -14,4 +14,6 @@ typedef unsigned char byte;
 
 char* mvm_bool_to_str(byte b);
 
+void mvm_assert(int exp, char* msg);
+
 #endif

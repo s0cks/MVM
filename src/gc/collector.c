@@ -8,6 +8,12 @@ mvm_gc_mark(mvm_obj_t* obj){
     }
 
     obj->marked = 1;
+
+    if(mvm_is_array(obj)){
+        for(size_t i = 0; i < mvm_array_size(obj); i++){
+            mvm_gc_mark(mvm_array_at(obj, i));
+        }
+    }
 }
 
 void
