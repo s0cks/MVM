@@ -88,9 +88,3 @@ mvm_class_is_instance(mvm_class_t* klass, mstring_t* sklass){
 
     return 0;
 }
-
-void
-mvm_class_spec(mvm_class_t* klass){
-    printf("Class: %s\n", mstring_cstr(klass->name));
-    printf("SuperClass: %s\n", klass->super == NULL ? "<root>" : (char*) mstring_cstr(klass->super->name));
-}

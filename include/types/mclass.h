@@ -29,8 +29,6 @@ byte mvm_class_is_instance(mvm_class_t* klass, mstring_t* sklass);
 
 mvm_class_field_t* mvm_class_define_field(mvm_class_t* klass, mstring_t* name, mvm_class_t* tclass);
 
-void mvm_class_spec(mvm_class_t* klass);
-
 #ifdef __cplusplus
 };
 #endif

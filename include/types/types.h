@@ -14,7 +14,8 @@ typedef enum{
     MVM_DOUBLE,
     MVM_BYTE,
     MVM_BOOL,
-    MVM_ARRAY
+    MVM_ARRAY,
+    MVM_NULL
 } mvm_obj_type;
 
 typedef struct _mvm_obj_t{
@@ -55,6 +56,10 @@ typedef struct{
     size_t size;
 } mvm_array_t;
 
+typedef struct{
+    mvm_obj_t obj;
+} mvm_null_t;
+
 #ifndef container_of
 #define container_of(ptr_, type_, member_)({ \
     const typeof(((type_*) 0)->member_)* __mbptr = ((void*) ptr_); \
@@ -70,6 +75,7 @@ typedef struct{
 #define mvm_is_string(mot_) ((mot_) && mvm_typeof(mot_) == MVM_STRING)
 #define mvm_is_bool(mot_) ((mot_) && mvm_typeof(mot_) == MVM_BOOL)
 #define mvm_is_array(mot_) ((mot_) && mvm_typeof(mot_) == MVM_ARRAY)
+#define mvm_is_null(mot_) ((mot_) && mvm_typeof(mot_) == MVM_NULL)
 
 #define mvm_to_integer(mot_) container_of(mot_, mvm_integer_t, obj)
 #define mvm_to_double(mot_) container_of(mot_, mvm_double_t, obj)
@@ -80,6 +86,10 @@ typedef struct{
 
 #define mvm_array_len(mot_) mvm_to_array(mot_)->len
 #define mvm_array_size(mot_) mvm_to_array(mot_)->size
+
+int mvm_equal(mvm_obj_t* obj1, mvm_obj_t* obj2);
+int mvm_equals(mvm_obj_t* obj1, mvm_obj_t* obj2);
+int mvm_string_equal(mvm_obj_t* obj1, mvm_obj_t* obj2);
 
 int mvm_integer_value(mvm_obj_t* obj);
 double mvm_double_value(mvm_obj_t* obj);

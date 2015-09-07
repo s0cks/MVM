@@ -1,20 +1,11 @@
 #ifndef MICROVM_OPCODES_H
 #define MICROVM_OPCODES_H
 
-#define MVM_OP_EXIT 0x0
-
-#define MVM_OP_ISTORE 0x30
-#define MVM_OP_DSTORE 0x31
-#define MVM_OP_SSTORE 0x32
-#define MVM_OP_BSTORE 0x33
-
-#define MVM_OP_IADD 0x40
-#define MVM_OP_DADD 0x41
-#define MVM_OP_BADD 0x42
-
-#define MVM_OP_IRETURN 0x50
-#define MVM_OP_DRETURN 0x51
-#define MVM_OP_SRETURN 0x52
-#define MVM_OP_BRETURN 0x53
+enum{
+    MOP_IADD = 0,
+    MOP_ISUB,
+    MOP_IMUL,
+    MOP_IDIV
+} mvm_opcode;
 
 #endif

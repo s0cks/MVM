@@ -34,22 +34,22 @@ mvm_string_value(mvm_obj_t* obj){
 
 void
 mvm_type_free(mvm_obj_t* obj){
+    if(obj == NULL){
+        return;
+    }
+
     if(mvm_is_string(obj)){
         mvm_string_t* str = mvm_to_string(obj);
         mstring_free(str->value);
         free(str);
     } else if(mvm_is_double(obj)){
-        mvm_double_t* dbl = mvm_to_double(obj);
-        free(dbl);
+        free(obj);
     } else if(mvm_is_byte(obj)){
-        mvm_byte_t* b = mvm_to_byte(obj);
-        free(b);
+        free(obj);
     } else if(mvm_is_integer(obj)){
-        mvm_integer_t* i = mvm_to_integer(obj);
-        free(i);
+        free(obj);
     } else if(mvm_is_bool(obj)){
-        mvm_bool_t* b = mvm_to_bool(obj);
-        free(b);
+        free(obj);
     } else if(mvm_is_array(obj)){
         mvm_array_t* array = mvm_to_array(obj);
         for(size_t i = 0; i < array->len; i++){
@@ -58,6 +58,8 @@ mvm_type_free(mvm_obj_t* obj){
             }
         }
         free(array);
+    } else if(mvm_is_null(obj)){
+        free(obj);
     } else{
         printf("[MVM] Unknown Type\n");
         exit(1);
@@ -110,4 +112,57 @@ mvm_array_push(mvm_obj_t* array, mvm_obj_t* value){
     }
 
     arr->value[arr->size++] = value;
+}
+
+int
+mvm_equals(mvm_obj_t* obj1, mvm_obj_t* obj2){
+    if(obj1 == obj2){
+        return 1;
+    }
+
+    if(obj1->type != obj2->type){
+        return 0;
+    }
+
+    if(mvm_is_bool(obj1)){
+        mvm_bool_t* b1 = mvm_to_bool(obj1);
+        mvm_bool_t* b2 = mvm_to_bool(obj2);
+        return b1->value == b2->value;
+    } else if(mvm_is_integer(obj1)){
+        mvm_integer_t* i1 = mvm_to_integer(obj1);
+        mvm_integer_t* i2 = mvm_to_integer(obj2);
+        return i1->value == i2->value;
+    } else if(mvm_is_double(obj1)){
+        mvm_double_t* d1 = mvm_to_double(obj1);
+        mvm_double_t* d2 = mvm_to_double(obj2);
+        return d1->value == d2->value;
+    } else if(mvm_is_null(obj1) && mvm_is_null(obj2)){
+        return 1;
+    } else if(mvm_is_byte(obj1)){
+        mvm_byte_t* b1 = mvm_to_byte(obj1);
+        mvm_byte_t* b2 = mvm_to_byte(obj2);
+        return b1->value == b2->value;
+    } else if(mvm_is_string(obj1)){
+        mvm_string_t* s1 = mvm_to_string(obj1);
+        mvm_string_t* s2 = mvm_to_string(obj2);
+        return s1->value == s2->value;
+    }
+
+    return 0;
+}
+
+int
+mvm_string_equal(mvm_obj_t* obj1, mvm_obj_t* obj2){
+    if(!mvm_is_string(obj1) || !mvm_is_string(obj2)){
+        return 0;
+    }
+
+    mvm_string_t* s1 = mvm_to_string(obj1);
+    mvm_string_t* s2 = mvm_to_string(obj2);
+    return mstring_equals(s1->value, s2->value);
+}
+
+int
+mvm_equal(mvm_obj_t* obj1, mvm_obj_t* obj2){
+    return obj1->type == obj2->type && mvm_is_string(obj1) && mvm_is_string(obj2) ? mvm_string_equal(obj1, obj2) : mvm_equals(obj1, obj2);
 }

@@ -114,6 +114,26 @@ mvm_alloc_new_string(mvm_allocator_t* alloc, byte* value){
 }
 
 mvm_obj_t*
+mvm_alloc_new_intern_string(mvm_allocator_t* alloc, mstring_pool_t* pool, byte* data){
+    if(alloc->num_objects == alloc->max_objects){
+        mvm_gc_collect(alloc);
+    }
+
+    mvm_string_t* str;
+    if((str = malloc(sizeof(mvm_string_t))) == NULL) {
+        return NULL;
+    }
+
+    str->value = mstring_pool_intern(pool, data);
+    str->obj.type = MVM_STRING;
+    str->obj.marked = 0;
+    str->obj.next = alloc->head;
+    alloc->head = &str->obj;
+    alloc->num_objects++;
+    return &str->obj;
+}
+
+mvm_obj_t*
 mvm_alloc_new_array(mvm_allocator_t* alloc, size_t len){
     if(alloc->num_objects == alloc->max_objects){
         mvm_gc_collect(alloc);
@@ -141,6 +161,25 @@ mvm_alloc_new_array(mvm_allocator_t* alloc, size_t len){
     alloc->head = &array->obj;
     alloc->num_objects++;
     return &array->obj;
+}
+
+mvm_obj_t*
+mvm_alloc_new_null(mvm_allocator_t* alloc){
+    if(alloc->num_objects == alloc->max_objects){
+        mvm_gc_collect(alloc);
+    }
+
+    mvm_null_t* null_t;
+    if((null_t = malloc(sizeof(mvm_null_t))) == NULL){
+        return NULL;
+    }
+
+    null_t->obj.type = MVM_NULL;
+    null_t->obj.marked = 0;
+    null_t->obj.next = alloc->head;
+    alloc->head = &null_t->obj;
+    alloc->num_objects++;
+    return &null_t->obj;
 }
 
 void
